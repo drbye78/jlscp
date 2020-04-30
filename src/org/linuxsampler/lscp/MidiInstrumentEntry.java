@@ -35,13 +35,13 @@ public class MidiInstrumentEntry implements Comparable<MidiInstrumentEntry> {
 	 * @param midiBank The MIDI bank number.
 	 * @param midiProgram The MIDI program number.
 	 * @throws IndexOutOfBoundsException If <code>midiBank</code>
-	 * is out of range <code>(midiBank < 0 || midiBank > 16129)</code>,
+	 * is out of range <code>(midiBank < 0 || midiBank > 16383)</code>,
 	 * or <code>midiProgram</code> is out of range
 	 * <code>(midiProgram < 0 || midiProgram > 127)</code>.
 	 */
 	public
 	MidiInstrumentEntry(int midiBank, int midiProgram) {
-		if(midiBank < 0 || midiBank > 16129) 
+		if(midiBank < 0 || midiBank > 16383)
 			throw new IndexOutOfBoundsException("midiBank is out of range");
 		
 		if(midiProgram < 0 || midiProgram > 127) 
