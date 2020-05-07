@@ -22,8 +22,9 @@
 
 package org.linuxsampler.lscp;
 
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
@@ -31,9 +32,9 @@ import java.io.IOException;
  * @author  Grigor Iliev
  */
 class LscpInputStream {
-	private InputStream in;
-	private StringBuffer buf = new StringBuffer();
-	
+	private final InputStream in;
+	private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
+
 	/**
 	 * Creates a new instance of LscpInputStream.
 	 *
@@ -56,23 +57,23 @@ class LscpInputStream {
 	public synchronized String
 	readLine() throws IOException, LscpException {
 		int i;
-		buf.setLength(0);
+		buf.reset();
 		
 		while((i = in.read()) != -1) {
 			if(i == '\r') {
 				checkLF();
 				break;
 			}
-			buf.append((char)i);
+			buf.write(i);
 		}
 		
 		if(i == -1) {
-			if(buf.length() > 0)
+			if(buf.size() > 0)
 				throw new LscpException(LscpI18n.getLogMsg("LscpInputStream.EOL!"));
 			return null;
 		}
 		
-		return buf.toString();
+		return buf.toString("UTF-8");
 	}
 	
 	/**

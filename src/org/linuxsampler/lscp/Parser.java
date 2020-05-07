@@ -22,8 +22,6 @@
 
 package org.linuxsampler.lscp;
 
-import java.io.IOException;
-
 import java.util.Vector;
 
 
@@ -81,7 +79,7 @@ public final class Parser {
 		if(list == null || list.length() == 0) return new String[0];
 		int pos = 0;
 		int idx;
-		Vector<String> v = new Vector<String>();
+		Vector<String> v = new Vector<>();
 		while((idx = list.indexOf(separator, pos)) > 0) {
 			v.add(list.substring(pos, idx));
 			pos = idx + 1;
@@ -176,10 +174,10 @@ public final class Parser {
 	public static String[]
 	parseEscapedStringList(String list, char separator) throws LscpException {
 		if(list == null || list.length() == 0) return new String[0];
-		int q1 = 0, q2 = 0;
+		int q1 = 0;
 		Vector<String> v = new Vector<String>();
 		
-		for(;;) {
+		for(int q2 = 0; ;) {
 			if(list.charAt(q1) != '\'')
 				throw new LscpException(LscpI18n.getLogMsg("Parser.brokenList!"));
 			q2 = findApostrophe(list, q1 + 1);
@@ -228,14 +226,15 @@ public final class Parser {
 	public static String[]
 	parseStringList(String list, char separator) throws LscpException {
 		if(list == null || list.length() == 0) return new String[0];
-		int q1 = 0, q2 = 0;
+		int q1 = 0;
 		Vector<String> v = new Vector<String>();
 		
-		for(;;) {
+		for(int q2 = 0; ;) {
 			if(list.charAt(q1) != '\'')
 				throw new LscpException(LscpI18n.getLogMsg("Parser.brokenList!"));
 			q2 = list.indexOf('\'', q1 + 1);
-			if(q2 == -1) throw new LscpException(LscpI18n.getLogMsg("Parser.EOL!"));
+			if(q2 == -1)
+				throw new LscpException(LscpI18n.getLogMsg("Parser.EOL!"));
 			v.add(list.substring(q1 + 1, q2));
 			
 			if(q2 + 1 >= list.length()) break;
@@ -353,10 +352,10 @@ public final class Parser {
 		if(resultSet == null || resultSet.length == 0) return null;
 		for(String s : resultSet) {
 			if(s.startsWith("TYPE: ")) {
-				String type = s.substring("TYPE: ".length(), s.length());
+				String type = s.substring("TYPE: ".length());
 				if(type.equals("BOOL")) return ParameterType.BOOL;
 				if(type.equals("INT")) return ParameterType.INT;
-				if(type.equals("FOAT")) return ParameterType.FLOAT;
+				if(type.equals("FLOAT")) return ParameterType.FLOAT;
 				if(type.equals("STRING")) return ParameterType.STRING;
 			}
 		}
@@ -377,7 +376,7 @@ public final class Parser {
 		
 		for(String s : resultSet) {
 			if(s.startsWith("MULTIPLICITY: ")) return Boolean.parseBoolean (
-				s.substring("MULTIPLICITY: ".length(), s.length())
+				s.substring("MULTIPLICITY: ".length())
 			);
 		}
 		
@@ -494,7 +493,7 @@ public final class Parser {
 	getCategoryInfo(String[] resultSet, String category) {
 		String c = category + ": ";
 		for(String s : resultSet) 
-			if(s.startsWith(c)) return s.substring(c.length(), s.length());
+			if(s.startsWith(c)) return s.substring(c.length());
 			
 		return null;
 	}
@@ -521,7 +520,7 @@ public final class Parser {
 	public static String
 	toEscapedString(Object obj) {
 		String s = obj.toString();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < s.length(); i++) {
 			switch(s.charAt(i)) {
 				case '\n': sb.append("\\n");  break;
@@ -545,7 +544,7 @@ public final class Parser {
 	public static String
 	toEscapedFileName(Object obj) {
 		String s = obj.toString();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < s.length(); i++) {
 			switch(s.charAt(i)) {
 				case '/' : sb.append("\\x2f"); break;
@@ -570,7 +569,7 @@ public final class Parser {
 	 */
 	public static String
 	toExtendedEscapeSequence(String escapedString) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < escapedString.length(); i++) {
 			char c = escapedString.charAt(i);
 			
@@ -590,9 +589,9 @@ public final class Parser {
 	
 	private static String
 	toEscapeString(char c) {
-		String s = Integer.toHexString((int)c);
+		String s = Integer.toHexString(c);
 		if(s.length() % 2 != 0) s = "0" + s;
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < s.length();) {
 			sb.append("\\x").append(s.charAt(i)).append(s.charAt(i + 1));
 			i += 2;
@@ -617,7 +616,7 @@ public final class Parser {
 	public static String
 	toNonEscapedString(Object obj) {
 		String s = obj.toString();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			if(c == '\\') {
@@ -751,9 +750,7 @@ public final class Parser {
 		if(path == null || path.length() < 2) return false;
 		
 		int last = path.length() - 1;
-		if(path.charAt(last) == '/' && !isEscaped(path, last)) return true;
-		
-		return false;
+		return path.charAt(last) == '/' && !isEscaped(path, last);
 	}
 	
 	/**

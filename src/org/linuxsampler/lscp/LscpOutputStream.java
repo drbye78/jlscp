@@ -25,6 +25,7 @@ package org.linuxsampler.lscp;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -32,7 +33,7 @@ import java.io.UnsupportedEncodingException;
  * @author  Grigor Iliev
  */
 class LscpOutputStream {
-	private OutputStream out;
+	private final OutputStream out;
 	
 	/** Creates a new instance of LscpOutputStream */
 	public
@@ -45,7 +46,7 @@ class LscpOutputStream {
 	public void
 	writeLine(String line) throws IOException {
 		try {
-			out.write(line.getBytes("US-ASCII"));
+			out.write(line.getBytes(StandardCharsets.UTF_8));
 			out.write('\r');
 			out.write('\n');
 			out.flush();
